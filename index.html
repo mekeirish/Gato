@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Annuaire des Boutiques</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass-panel {
+            background: rgba(245, 243, 240, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(217, 210, 201, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 221, 213, 0.5);
+        }
+        body {
+            background-color: #f7f5f0;
+            color: #2c2926;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4b6cb7">
+<link rel="apple-touch-icon" href="icon.png"></head>
+<body class="pb-20 antialiased selection:bg-stone-300">
+
+    <!-- En-tête de la vitrine -->
+    <header class="glass-panel sticky top-0 z-40 px-4 py-4 border-b flex items-center justify-between shadow-xs">
+        <div>
+            <h1 class="font-bold text-lg tracking-tight text-stone-900">Nos Boutiques</h1>
+            <p class="text-xs text-stone-500">Commandez directement auprès de nos marchands</p>
+        </div>
+        <a href="creator.html" class="w-9 h-9 rounded-xl bg-stone-900 text-stone-100 flex items-center justify-center text-xs font-bold shadow-md active:scale-95 transition" title="Panneau Creator">⚙️</a>
+    </header>
+
+    <!-- Grille des vendeurs (2 colonnes) -->
+    <main class="p-3 max-w-md mx-auto">
+        <div id="vendors-grid" class="grid grid-cols-2 gap-3">
+            <!-- Les cartes des vendeurs seront injectées ici -->
+        </div>
+    </main>
+
+    <script>
+        // Liste des vendeurs (Sera gérée ou mise à jour par le creator.html)
+        const vendorsList = [
+            {
+                id: "vendeur1",
+                name: "Boutique Artisanale Atlas",
+                category: "Produits du terroir",
+                image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&q=80",
+                link: "vendors/vendeur1.html"
+            },
+            {
+                id: "vendeur2",
+                name: "Saveurs d'Orient",
+                category: "Épices & Douceurs",
+                image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&q=80",
+                link: "vendors/vendeur2.html"
+            }
+        ];
+
+        function initIndex() {
+            const grid = document.getElementById('vendors-grid');
+            grid.innerHTML = '';
+
+            vendorsList.forEach(vendor => {
+                const card = document.createElement('a');
+                card.href = vendor.link;
+                card.className = "glass-card rounded-2xl p-2.5 flex flex-col justify-between shadow-xs hover:shadow-md transition group block";
+                card.innerHTML = `
+                    <div>
+                        <div class="w-full h-32 rounded-xl overflow-hidden mb-2 bg-stone-200 relative">
+                            <img src="${vendor.image}" alt="${vendor.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-2 right-2 bg-white/80 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-stone-700 shadow-xs">Actif</span>
+                        </div>
+                        <h2 class="font-semibold text-xs text-stone-900 line-clamp-1">${vendor.name}</h2>
+                        <p class="text-[11px] text-stone-500 mt-0.5">${vendor.category}</p>
+                    </div>
+                    <div class="mt-3 w-full bg-stone-900 text-stone-100 text-center py-2 rounded-xl font-medium text-xs shadow-xs group-hover:bg-stone-800 transition">
+                        Visiter la boutique →
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        initIndex();
+    </script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
+</body>
+</html>
