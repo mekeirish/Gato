@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Boutique Artisanale Atlas - Gato</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass-panel {
+            background: rgba(245, 243, 240, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(217, 210, 201, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 221, 213, 0.5);
+        }
+        body {
+            background-color: #f7f5f0;
+            color: #2c2926;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="pb-28 antialiased selection:bg-stone-300">
+
+    <!-- En-tête de la boutique -->
+    <header class="glass-panel sticky top-0 z-40 px-4 py-3 border-b flex items-center justify-between shadow-xs">
+        <div>
+            <a href="../index.html" class="text-[10px] font-bold text-stone-500 hover:text-stone-900 transition flex items-center gap-1 mb-0.5">← Retour à l'accueil</a>
+            <h1 id="shop-name" class="font-bold text-lg tracking-tight text-stone-800">Boutique Artisanale Atlas</h1>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-xs font-bold text-stone-700 shadow-inner">🏪</div>
+    </header>
+
+    <!-- Grille des produits (2 colonnes) -->
+    <main class="p-3 max-w-md mx-auto">
+        <div id="products-grid" class="grid grid-cols-2 gap-3">
+            <!-- Injecté dynamiquement -->
+        </div>
+    </main>
+
+    <!-- Barre inférieure du panier -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 glass-panel border-t p-3 max-w-md mx-auto z-50 shadow-lg transition-transform duration-300 translate-y-full opacity-0">
+        <div class="flex items-center justify-between mb-2 px-1">
+            <div class="text-xs text-stone-600 font-medium">
+                Articles : <span id="cart-count" class="font-bold text-stone-900">0</span>
+            </div>
+            <div class="text-sm font-bold text-stone-900">
+                Total : <span id="cart-total" class="text-stone-900">0</span> DA
+            </div>
+        </div>
+        <button onclick="checkoutWhatsApp()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-100 font-semibold py-3 px-4 rounded-xl shadow-md transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm">
+            <span>Commander via WhatsApp</span>
+            <svg class="w-4 h-4 text-emerald-400 fill-current" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01-1.87-1.87-4.36-2.9-7.01-2.9zm0 1.83c2.2 0 4.27.86 5.82 2.42 1.56 1.56 2.42 3.63 2.42 5.82 0 4.54-3.7 8.24-8.24 8.24-1.45 0-2.87-.38-4.12-1.11l-.3-.18-3.09.81.82-3.02-.19-.31c-.77-1.25-1.18-2.71-1.18-4.21 0-4.54 3.7-8.24 8.24-8.24zm-4.33 4.2c-.17 0-.36.06-.55.24-.19.18-.73.71-.73 1.73s.75 2.01.85 2.15c.1.14 1.47 2.25 3.56 3.15.5.22.89.35 1.2.45.5.16.96.14 1.32.08.4-.07 1.25-.51 1.43-1 .18-.5.18-.93.13-1-.05-.07-.18-.11-.38-.21-.2-.1-1.25-.62-1.44-.69-.19-.07-.33-.1-.47.1-.14.2-.54.69-.66.83-.12.14-.24.16-.44.06-.2-.1-0.85-.31-1.62-1-.6-.54-1.01-1.21-1.13-1.41-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.47-1.14-.65-1.56-.17-.41-.35-.35-.48-.35h-.41z"/></svg>
+        </button>
+    </div>
+
+    <script>
+        const vendorData = {
+            name: "Boutique Artisanale Atlas",
+            phone: "+213000000000",
+            products: [
+                { id: 1, name: "Huile d'Olive Extra", price: 1800, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&q=80" },
+                { id: 2, name: "Miel Pur de Montagne", price: 3500, image: "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=300&q=80" },
+                { id: 3, name: "Coffret Épices du Sud", price: 1200, image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&q=80" },
+                { id: 4, name: "Savon Noir Traditionnel", price: 600, image: "https://images.unsplash.com/photo-1608248597359-9942d99d9b62?w=300&q=80" }
+            ]
+        };
+
+        let cart = {};
+
+        function initShop() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+
+            vendorData.products.forEach(product => {
+                const qty = cart[product.id] || 0;
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-2.5 flex flex-col justify-between shadow-xs";
+                card.innerHTML = `
+                    <div>
+                        <div class="w-full h-32 rounded-xl overflow-hidden mb-2 bg-stone-200">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                        </div>
+                        <h2 class="font-semibold text-xs text-stone-800 line-clamp-1">${product.name}</h2>
+                        <p class="text-xs font-bold text-stone-900 mt-1">${product.price} DA</p>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between bg-stone-100/80 rounded-xl p-1 border border-stone-200/50">
+                        <button onclick="updateQty(${product.id}, -1)" class="w-7 h-7 bg-white rounded-lg shadow-xs flex items-center justify-center font-bold text-stone-700 active:scale-95 transition">-</button>
+                        <span id="qty-${product.id}" class="text-xs font-bold text-stone-800">${qty}</span>
+                        <button onclick="updateQty(${product.id}, 1)" class="w-7 h-7 bg-stone-900 text-white rounded-lg shadow-xs flex items-center justify-center font-bold active:scale-95 transition">+</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            updateCartBar();
+        }
+
+        function updateQty(productId, delta) {
+            if (!cart[productId]) cart[productId] = 0;
+            cart[productId] += delta;
+            if (cart[productId] <= 0) delete cart[productId];
+
+            const qtySpan = document.getElementById(`qty-${productId}`);
+            if (qtySpan) qtySpan.textContent = cart[productId] || 0;
+
+            updateCartBar();
+        }
+
+        function updateCartBar() {
+            let totalItems = 0;
+            let totalPrice = 0;
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const product = vendorData.products.find(p => p.id == id);
+                if (product) {
+                    totalItems += qty;
+                    totalPrice += product.price * qty;
+                }
+            }
+
+            document.getElementById('cart-count').textContent = totalItems;
+            document.getElementById('cart-total').textContent = totalPrice;
+
+            const cartBar = document.getElementById('cart-bar');
+            if (totalItems > 0) {
+                cartBar.classList.remove('translate-y-full', 'opacity-0');
+            } else {
+                cartBar.classList.add('translate-y-full', 'opacity-0');
+            }
+        }
+
+        function checkoutWhatsApp() {
+            let message = `*Nouvelle Commande - ${vendorData.name}* 🛒\n\n`;
+            let total = 0;
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const product = vendorData.products.find(p => p.id == id);
+                if (product) {
+                    const subtotal = product.price * qty;
+                    total += subtotal;
+                    message += `▪️ ${product.name} (x${qty}) : ${subtotal} DA\n`;
+                }
+            }
+
+            message += `\n*Total Général : ${total} DA*`;
+            
+            const whatsappURL = `https://wa.me/${vendorData.phone}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        initShop();
+    </script>
+</body>
+</html>
