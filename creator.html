@@ -18,7 +18,7 @@
     <header class="glass-panel sticky top-0 z-40 px-4 py-4 border-b flex items-center justify-between shadow-xs">
         <div>
             <h1 class="font-bold text-lg tracking-tight text-stone-900">Creator Studio</h1>
-            <p class="text-xs text-stone-500">Gestion globale & Générateur</p>
+            <p class="text-xs text-stone-500">Générateur multi-produits</p>
         </div>
         <a href="index.html" class="px-3 py-1.5 rounded-xl bg-stone-200 text-stone-800 text-xs font-bold shadow-xs active:scale-95 transition">← Accueil</a>
     </header>
@@ -26,12 +26,12 @@
     <main class="p-3 max-w-md mx-auto space-y-4">
         
         <!-- Formulaire de Création -->
-        <section class="glass-card rounded-2xl p-4 shadow-sm">
-            <h2 class="font-bold text-sm text-stone-900 mb-3 flex items-center gap-2">
-                <span>🛠️</span> Ajouter une nouvelle boutique
+        <section class="glass-card rounded-2xl p-4 shadow-sm space-y-3">
+            <h2 class="font-bold text-sm text-stone-900 flex items-center gap-2">
+                <span>🛠️</span> 1. Informations de la Boutique
             </h2>
             
-            <form id="creator-form" class="space-y-3">
+            <div class="space-y-2">
                 <div>
                     <label class="block text-[11px] font-bold text-stone-600 mb-1">ID du Vendeur (ex: vendeur2)</label>
                     <input type="text" id="v-id" required placeholder="vendeur2" class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
@@ -49,45 +49,122 @@
                     <input type="text" id="v-phone" required placeholder="+213..." class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-stone-600 mb-1">URL de l'image de couverture</label>
+                    <label class="block text-[11px] font-bold text-stone-600 mb-1">Image de couverture de la boutique</label>
                     <input type="url" id="v-image" required placeholder="https://..." class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
                 </div>
-                
-                <button type="button" onclick="generateAllCodes()" class="w-full bg-stone-900 text-stone-100 font-semibold py-2.5 px-4 rounded-xl shadow-md text-xs active:scale-98 transition flex items-center justify-center gap-2">
-                    <span>Générer les codes (Boutique + Index)</span>
-                </button>
-            </form>
+            </div>
+
+            <hr class="border-stone-200/60 my-2">
+
+            <!-- Gestion des Produits -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-bold text-sm text-stone-900 flex items-center gap-2">
+                        <span>📦</span> 2. Catalogue Produits (<span id="p-count">0</span>)
+                    </h2>
+                </div>
+
+                <div class="bg-white/40 p-3 rounded-xl border border-stone-200/60 space-y-2">
+                    <input type="text" id="p-name" placeholder="Nom du produit" class="w-full px-3 py-1.5 bg-white/80 border border-stone-200 rounded-lg text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="p-price" placeholder="Prix (DA)" class="w-full px-3 py-1.5 bg-white/80 border border-stone-200 rounded-lg text-xs">
+                        <input type="url" id="p-image" placeholder="URL Image" class="w-full px-3 py-1.5 bg-white/80 border border-stone-200 rounded-lg text-xs">
+                    </div>
+                    <button type="button" onclick="addProduct()" class="w-full bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold py-1.5 rounded-lg text-xs transition">+ Ajouter ce produit au catalogue</button>
+                </div>
+
+                <!-- Liste temporaire des produits ajoutés -->
+                <div id="products-preview-list" class="space-y-1.5 max-h-40 overflow-y-auto">
+                    <p class="text-[11px] text-stone-400 italic text-center py-2">Aucun produit ajouté pour le moment</p>
+                </div>
+            </div>
+
+            <button type="button" onclick="generateAllCodes()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-100 font-semibold py-3 px-4 rounded-xl shadow-md text-xs active:scale-98 transition flex items-center justify-center gap-2 mt-4">
+                <span>Générer tous les fichiers finaux</span>
+            </button>
         </section>
 
         <!-- Sortie 1 : Code de la Boutique -->
         <section id="output-vendor" class="glass-card rounded-2xl p-4 shadow-sm hidden">
             <h2 class="font-bold text-sm text-stone-900 mb-1 flex items-center justify-between">
-                <span>📄 1. Code de la page Vendeur</span>
+                <span>📄 Code de la page Vendeur</span>
                 <span id="filename-badge" class="text-[10px] bg-stone-200 px-2 py-0.5 rounded-md font-mono text-stone-700"></span>
             </h2>
             <p class="text-[11px] text-stone-500 mb-2">À enregistrer dans <code class="bg-stone-200 px-1 py-0.5 rounded">vendors/nom.html</code></p>
-            <textarea id="code-v-output" readonly rows="4" class="w-full p-2 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl border border-stone-700 mb-2 select-all"></textarea>
-            <button onclick="copyVendorCode()" class="w-full bg-stone-800 text-white font-semibold py-2 rounded-xl text-xs">Copier le code Vendeur</button>
+            <textarea id="code-v-output" readonly rows="5" class="w-full p-2 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl border border-stone-700 mb-2 select-all"></textarea>
+            <button onclick="copyVendorCode()" class="w-full bg-stone-800 hover:bg-stone-700 text-white font-semibold py-2 rounded-xl text-xs">Copier le code Vendeur</button>
         </section>
 
         <!-- Sortie 2 : Code de l'Index mis à jour -->
         <section id="output-index" class="glass-card rounded-2xl p-4 shadow-sm hidden">
             <h2 class="font-bold text-sm text-stone-900 mb-1 flex items-center justify-between">
-                <span>🏠 2. Code Index mis à jour</span>
+                <span>🏠 Code Index mis à jour</span>
                 <span class="text-[10px] bg-stone-200 px-2 py-0.5 rounded-md font-mono text-stone-700">index.html</span>
             </h2>
             <p class="text-[11px] text-stone-500 mb-2">Remplace le contenu de ton <code class="bg-stone-200 px-1 py-0.5 rounded">index.html</code> à la racine</p>
-            <textarea id="code-i-output" readonly rows="4" class="w-full p-2 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl border border-stone-700 mb-2 select-all"></textarea>
-            <button onclick="copyIndexCode()" class="w-full bg-emerald-700 text-white font-semibold py-2 rounded-xl text-xs">Copier le code Index</button>
+            <textarea id="code-i-output" readonly rows="5" class="w-full p-2 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl border border-stone-700 mb-2 select-all"></textarea>
+            <button onclick="copyIndexCode()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-xl text-xs">Copier le code Index</button>
         </section>
 
     </main>
 
     <script>
-        // Liste en mémoire persistante pour le creator
+        let currentProducts = [];
         let managedVendors = [
             { id: "vendeur1", name: "Boutique Artisanale Atlas", category: "Produits du terroir", image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&q=80", link: "vendors/vendeur1.html" }
         ];
+
+        function addProduct() {
+            const name = document.getElementById('p-name').value.trim();
+            const price = parseFloat(document.getElementById('p-price').value);
+            const image = document.getElementById('p-image').value.trim();
+
+            if (!name || isNaN(price) || !image) {
+                alert("Veuillez remplir correctement tous les champs du produit.");
+                return;
+            }
+
+            currentProducts.push({ id: Date.now(), name, price, image });
+            
+            // Reset des champs produit
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-image').value = '';
+
+            renderProductsPreview();
+        }
+
+        function removeProduct(id) {
+            currentProducts = currentProducts.filter(p => p.id !== id);
+            renderProductsPreview();
+        }
+
+        function renderProductsPreview() {
+            const container = document.getElementById('products-preview-list');
+            document.getElementById('p-count').textContent = currentProducts.length;
+            
+            if (currentProducts.length === 0) {
+                container.innerHTML = '<p class="text-[11px] text-stone-400 italic text-center py-2">Aucun produit ajouté pour le moment</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            currentProducts.forEach(p => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between bg-white/70 p-2 rounded-lg border border-stone-200/60 text-xs";
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <img src="${p.image}" class="w-8 h-8 rounded object-cover">
+                        <div class="truncate">
+                            <p class="font-semibold text-stone-800 truncate">${p.name}</p>
+                            <p class="text-[10px] text-stone-500">${p.price} DA</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="removeProduct(${p.id})" class="text-rose-500 font-bold px-2 py-1 text-sm">×</button>
+                `;
+                container.appendChild(item);
+            });
+        }
 
         function generateAllCodes() {
             const id = document.getElementById('v-id').value.trim();
@@ -97,11 +174,16 @@
             const image = document.getElementById('v-image').value.trim();
 
             if (!id || !name || !cat || !phone || !image) {
-                alert("Veuillez remplir tous les champs !");
+                alert("Veuillez remplir tous les champs de la boutique !");
                 return;
             }
 
-            // 1. Génération du HTML Vendeur
+            if (currentProducts.length === 0) {
+                alert("Veuillez ajouter au moins un produit au catalogue !");
+                return;
+            }
+
+            // Génération du code source de la page vendeur avec son vrai tableau de produits
             const vendorHTML = `<!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
@@ -139,8 +221,9 @@
     </div>
     <script>
         const vendorData = {
-            name: "${name}", phone: "${phone}",
-            products: [{ id: 1, name: "Article Exemple", price: 1500, image: "${image}" }]
+            name: "${name}", 
+            phone: "${phone}",
+            products: ${JSON.stringify(currentProducts, null, 4)}
         };
         let cart = {};
         function initShop() {
@@ -169,7 +252,8 @@
             if (!cart[id]) cart[id] = 0;
             cart[id] += delta;
             if (cart[id] <= 0) delete cart[id];
-            document.getElementById(\`qty-\${id}\`).textContent = cart[id] || 0;
+            const span = document.getElementById(\`qty-\${id}\`);
+            if(span) span.textContent = cart[id] || 0;
             updateCartBar();
         }
         function updateCartBar() {
@@ -199,12 +283,11 @@
 </body>
 </html>`;
 
-            // Ajout au tableau local s'il n'existe pas déjà
             if (!managedVendors.some(v => v.id === id)) {
                 managedVendors.push({ id, name, category: cat, image, link: `vendors/${id}.html` });
             }
 
-            // 2. Génération du HTML Index mis à jour
+            // Génération de l'index
             const indexHTML = `<!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
@@ -255,7 +338,6 @@
 </body>
 </html>`;
 
-            // Affichage des résultats
             document.getElementById('code-v-output').value = vendorHTML;
             document.getElementById('filename-badge').textContent = `vendors/${id}.html`;
             document.getElementById('code-i-output').value = indexHTML;
