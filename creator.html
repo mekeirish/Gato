@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Creator Studio - Gato</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass-panel {
+            background: rgba(245, 243, 240, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(217, 210, 201, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 221, 213, 0.5);
+        }
+        body {
+            background-color: #f7f5f0;
+            color: #2c2926;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="pb-24 antialiased selection:bg-stone-300">
+
+    <!-- En-tête -->
+    <header class="glass-panel sticky top-0 z-40 px-4 py-4 border-b flex items-center justify-between shadow-xs">
+        <div>
+            <h1 class="font-bold text-lg tracking-tight text-stone-900">Creator Studio</h1>
+            <p class="text-xs text-stone-500">Générez et gérez vos boutiques</p>
+        </div>
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-stone-200 text-stone-800 text-xs font-bold shadow-xs active:scale-95 transition">← Accueil</a>
+    </header>
+
+    <!-- Contenu Principal -->
+    <main class="p-3 max-w-md mx-auto space-y-4">
+        
+        <!-- Formulaire de Génération -->
+        <section class="glass-card rounded-2xl p-4 shadow-sm">
+            <h2 class="font-bold text-sm text-stone-900 mb-3 flex items-center gap-2">
+                <span>🛠️</span> Créer une nouvelle boutique
+            </h2>
+            
+            <form id="creator-form" class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-600 mb-1">ID du Vendeur (ex: vendeur2)</label>
+                    <input type="text" id="v-id" required placeholder="vendeur2" class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-600 mb-1">Nom de la Boutique</label>
+                    <input type="text" id="v-name" required placeholder="Saveurs d'Orient" class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-600 mb-1">Numéro WhatsApp (+Indicatif)</label>
+                    <input type="text" id="v-phone" required placeholder="+213..." class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-600 mb-1">URL de l'image de couverture</label>
+                    <input type="url" id="v-image" required placeholder="https://..." class="w-full px-3 py-2 bg-white/70 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
+                </div>
+                
+                <button type="button" onclick="generateVendorCode()" class="w-full bg-stone-900 text-stone-100 font-semibold py-2.5 px-4 rounded-xl shadow-md text-xs active:scale-98 transition flex items-center justify-center gap-2">
+                    <span>Générer le code de la page</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Zone de Résultat du Code Généré -->
+        <section id="output-section" class="glass-card rounded-2xl p-4 shadow-sm hidden">
+            <h2 class="font-bold text-sm text-stone-900 mb-2 flex items-center justify-between">
+                <span>📄 Code prêt à enregistrer</span>
+                <span id="filename-badge" class="text-[10px] bg-stone-200 px-2 py-0.5 rounded-md font-mono text-stone-700"></span>
+            </h2>
+            <p class="text-[11px] text-stone-500 mb-3">Créez un fichier portant ce nom dans votre dossier <code class="bg-stone-200 px-1 py-0.5 rounded">vendors/</code> sur GitHub et collez ce code dedans.</p>
+            
+            <textarea id="code-output" readonly rows="6" class="w-full p-2.5 bg-stone-900 text-emerald-400 font-mono text-[10px] rounded-xl border border-stone-700 focus:outline-none mb-3 select-all"></textarea>
+            
+            <button onclick="copyCode()" id="copy-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-md text-xs transition flex items-center justify-center gap-2">
+                <span>Copier tout le code</span>
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        function generateVendorCode() {
+            const id = document.getElementById('v-id').value.trim();
+            const name = document.getElementById('v-name').value.trim();
+            const phone = document.getElementById('v-phone').value.trim();
+            const image = document.getElementById('v-image').value.trim();
+
+            if (!id || !name || !phone || !image) {
+                alert("Veuillez remplir tous les champs !");
+                return;
+            }
+
+            // Template complet de la page vendeur injecté avec les données du formulaire
+            const vendorHTML = `<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${name} - Gato</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass-panel { background: rgba(245, 243, 240, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(217, 210, 201, 0.4); }
+        .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(226, 221, 213, 0.5); }
+        body { background-color: #f7f5f0; color: #2c2926; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="pb-28 antialiased selection:bg-stone-300">
+    <header class="glass-panel sticky top-0 z-40 px-4 py-3 border-b flex items-center justify-between shadow-xs">
+        <div>
+            <a href="../index.html" class="text-[10px] font-bold text-stone-500 hover:text-stone-900 transition flex items-center gap-1 mb-0.5">← Retour à l'accueil</a>
+            <h1 id="shop-name" class="font-bold text-lg tracking-tight text-stone-800">${name}</h1>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-stone-200 overflow-hidden shadow-inner flex items-center justify-center">
+            <img src="${image}" alt="${name}" class="w-full h-full object-cover">
+        </div>
+    </header>
+
+    <main class="p-3 max-w-md mx-auto">
+        <div id="products-grid" class="grid grid-cols-2 gap-3"></div>
+    </main>
+
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 glass-panel border-t p-3 max-w-md mx-auto z-50 shadow-lg transition-transform duration-300 translate-y-full opacity-0">
+        <div class="flex items-center justify-between mb-2 px-1">
+            <div class="text-xs text-stone-600 font-medium">Articles : <span id="cart-count" class="font-bold text-stone-900">0</span></div>
+            <div class="text-sm font-bold text-stone-900">Total : <span id="cart-total" class="text-stone-900">0</span> DA</div>
+        </div>
+        <button onclick="checkoutWhatsApp()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-100 font-semibold py-3 px-4 rounded-xl shadow-md transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm">
+            <span>Commander via WhatsApp</span>
+        </button>
+    </div>
+
+    <script>
+        const vendorData = {
+            name: "${name}",
+            phone: "${phone}",
+            products: [
+                { id: 1, name: "Article Exemple 1", price: 1500, image: "${image}" }
+            ]
+        };
+
+        let cart = {};
+
+        function initShop() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            vendorData.products.forEach(product => {
+                const qty = cart[product.id] || 0;
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-2.5 flex flex-col justify-between shadow-xs";
+                card.innerHTML = \`
+                    <div>
+                        <div class="w-full h-32 rounded-xl overflow-hidden mb-2 bg-stone-200">
+                            <img src="\${product.image}" alt="\${product.name}" class="w-full h-full object-cover">
+                        </div>
+                        <h2 class="font-semibold text-xs text-stone-800 line-clamp-1">\${product.name}</h2>
+                        <p class="text-xs font-bold text-stone-900 mt-1">\${product.price} DA</p>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between bg-stone-100/80 rounded-xl p-1 border border-stone-200/50">
+                        <button onclick="updateQty(\${product.id}, -1)" class="w-7 h-7 bg-white rounded-lg shadow-xs flex items-center justify-center font-bold text-stone-700">-</button>
+                        <span id="qty-\${product.id}" class="text-xs font-bold text-stone-800">\${qty}</span>
+                        <button onclick="updateQty(\${product.id}, 1)" class="w-7 h-7 bg-stone-900 text-white rounded-lg shadow-xs flex items-center justify-center font-bold">+</button>
+                    </div>
+                \`;
+                grid.appendChild(card);
+            });
+            updateCartBar();
+        }
+
+        function updateQty(productId, delta) {
+            if (!cart[productId]) cart[productId] = 0;
+            cart[productId] += delta;
+            if (cart[productId] <= 0) delete cart[productId];
+            const qtySpan = document.getElementById(\`qty-\${productId}\`);
+            if (qtySpan) qtySpan.textContent = cart[productId] || 0;
+            updateCartBar();
+        }
+
+        function updateCartBar() {
+            let totalItems = 0, totalPrice = 0;
+            for (const [id, qty] of Object.entries(cart)) {
+                const product = vendorData.products.find(p => p.id == id);
+                if (product) { totalItems += qty; totalPrice += product.price * qty; }
+            }
+            document.getElementById('cart-count').textContent = totalItems;
+            document.getElementById('cart-total').textContent = totalPrice;
+            const cartBar = document.getElementById('cart-bar');
+            if (totalItems > 0) { cartBar.classList.remove('translate-y-full', 'opacity-0'); }
+            else { cartBar.classList.add('translate-y-full', 'opacity-0'); }
+        }
+
+        function checkoutWhatsApp() {
+            let message = \`*Nouvelle Commande - \${vendorData.name}* 🛒\\n\\n\`;
+            let total = 0;
+            for (const [id, qty] of Object.entries(cart)) {
+                const product = vendorData.products.find(p => p.id == id);
+                if (product) {
+                    const subtotal = product.price * qty;
+                    total += subtotal;
+                    message += \`▪️ \${product.name} (x\${qty}) : \${subtotal} DA\\n\`;
+                }
+            }
+            message += \`\\n*Total Général : \${total} DA*\`;
+            window.open(\`https://wa.me/\${vendorData.phone}?text=\${encodeURIComponent(message)}\`, '_blank');
+        }
+
+        initShop();
+    </script>
+</body>
+</html>`;
+
+            // Affichage dans la zone de texte
+            document.getElementById('code-output').value = vendorHTML;
+            document.getElementById('filename-badge').textContent = `vendors/${id}.html`;
+            document.getElementById('output-section').classList.remove('hidden');
+            document.getElementById('output-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyCode() {
+            const textarea = document.getElementById('code-output');
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value);
+            const btn = document.getElementById('copy-btn');
+            btn.textContent = "✅ Code copié !";
+            setTimeout(() => { btn.innerHTML = "<span>Copier tout le code</span>"; }, 2000);
+        }
+    </script>
+</body>
+</html>
